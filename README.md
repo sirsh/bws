@@ -1,4 +1,4 @@
-# Wecome
+# Welcome
 
 compile with *make* (see make file for simple compile line)
 
