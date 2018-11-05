@@ -4,7 +4,7 @@ import numpy as np
 
 q = input("please provide a UNIQUE run qualifier for output files [e.g RUN07_90_X]:> ")
 
-print("processing the out.data file in the parent folder")
+print("processing the out.data file in the local folder")
 template = "#(HIST)#"
 with open ("./out.data") as f:
     with open("./data/{}_histogram.csv".format(q), "w") as g:
