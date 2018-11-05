@@ -412,7 +412,7 @@ int parse_args(int *bcs, int *D, int *L, int *C, int *Ln, int *N, int *seed, int
 	//*L = 63730;FB
 	//*L = 2559;// 2361;
 
-	//__graph_type__ = 0; //change dim and grap type - if graph type is 2, dim must be 1
+	//__graph_type__ = 0; //change dim and graph type - if graph type is 2, dim must be 1
 	/////////////////////
 	// Check if Windows. Then get parameters as "seed, N, Ln (lattice length), D, bcs"
 #ifdef _WIN64
