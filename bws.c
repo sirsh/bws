@@ -166,21 +166,7 @@ void spit_out_image_light(int L, int D, long double t, int n, int new_lines) {
 	FILE *g = NULL;
 	fopen_s(&g, "lattice_sp.out", "a");
 	for (a = 0; a < L*L; a++) {
-		//if (HOLE == (lattice[a] & HOLE)) {
-			//fprintf(g, "%.3Lf\t%d\n", t, lattice[a]);
-		//}
 
-		//if (TRACE_FLAG == (lattice[a] & TRACE_FLAG)) {
-		//	if (CURRENT_FLAG == (lattice[a] & CURRENT_FLAG))//if it is there now
-		//		fprintf(g, "%.3Lf\t%d\n", t, -1*a);
-		//	else
-		//		fprintf(g, "%.3Lf\t%d\n", t, a);
-		//}
-
-		//else {
-		//	//this is for testing and viz
-		//	//printf("    ");
-		//}
 	}
 	fclose(g);
 }
@@ -192,14 +178,7 @@ int main(int argc, char *argv[])
 	setlinebuf(stdout);
 #endif
 
-	// generate_binary_tree(600001);
-	// generate_binary_tree(200001);
-	// generate_binary_tree(300001);
-	// generate_binary_tree(400001);
-	// generate_binary_tree(800001);
-
-	// return 0;
-
+	
 	double sigma, h;
 
 	int BCs, D, l, Ln, L, C, N, seed, min_l, max_l;
@@ -217,20 +196,7 @@ int main(int argc, char *argv[])
 
 			INIT_WRITE_TIMES
 			WRITE_HEADER;//SA
-			//printf("\nN\tt\th\tsig\ttrace\tevents\tbirths\tdeaths\tann\tdbg\n");
-
-
-			//printf("n\ttm\tsig\ttrace\tevents\tbirths\tdeaths\tdbd\n");
-			// D = 3; //max alloc requirement
-			// h = 0.2;
-			// L=63;
-
-			// MAX_L = L = 10024;
-			//printf("\n#allocating %d", MAX_L);
-
-			//this is important setup - i allocate and generate the maxium graph as an allocation 
-			//must be 1D.
-			//after, re-alloc will not attempt to enlarge the remory but instead we will write over the memory with increasingly large graphs, confined.
+		
 		if (__graph_type__ == 2)
 			D = 1;//
 
@@ -239,41 +205,7 @@ int main(int argc, char *argv[])
 
 		if (__graph_type__ == 2) generate_graph(MAX_L);
 
-		//run_for_realisations(1, 1001, 1, 0.1, sigma, 0);
-		//printf("done");
-		//return 0;
-
-		//FOR BINARY TREE I AM MESSING WITH DIMS
-
-
-				/*
-		D = 2;
-		__is_annhilating__ = 1;
-		allocate_lattice(&lattice, MAX_L, D, __graph_type__);
-		if(__graph_type__==2)generate_graph(MAX_L);
-
-		// double sigmas [] = {  0.75, 0.65, 0.75, 0.85, 0.851, 0.852, 853};
-		int ds [] = {D};
-		int a1 =0, a2=0, a3=1;
-
-		double epsilon = 0.0;
-		double start = 0.6;
-		double increment = 0.1;
-		for (a1 = 0; a1 < 1; a1++){
-			for (a2 =0; a2 < 5; a2++){
-				//for (a3=3;a3 <= 10; a3++)
-				{
-					h= 1.0;//0.9 + 0.01 * a3;
-					run_for_realisations(N, L, ds[a2], h, start, BCs);
-				}
-				start+= increment;
-			}
-		}
-
-		return 0;
-		*/
-		//**************************************************
-
+	
 	//we either run a single L if specified, otherwise go through the motions
 		if (L > 0) { run_for_realisations(N, L, D, h, sigma, BCs); }
 		else {
@@ -371,13 +303,7 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 
 		//printf("#INIT...");
 		init_lattice(bcs, L, D);
-		// printf("\n#Adding test particle");
-		// ADD(0);
-		// printf("..DONE");
-
-		//return;
-		//reset();
-		//init_cells();
+	
 		stack.top = 0; __trace = 0; __immobileTrace = 0, __maxParticles = 0; __avalanche = 0.0;
 		radius_gyr = 0;
 
@@ -387,9 +313,7 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 		if (__graph_type__ == 2) {
 
 			_RANDOM_INT(cen, L - 2) + 1;
-			//for render may want to start at root
-			//cen = 0;//SA TEST - always start at what i think is the root for RT
-
+			
 		}
 
 
@@ -409,16 +333,6 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 					//write the hull IF we have set a particular global option
 					if ((write_time_index % 10 == 0) && (__trace > 100)
 						&& (
-							/*_n == 4122 |
-							_n == 8201 |
-							_n == 8696 |
-							_n == 9323 |
-							_n == 11228 |
-							_n == 12833 |
-							_n == 17576 |
-							_n == 19606 |
-							_n == 34638 |
-							_n == 49745 |*/
 							_n == 15034)
 						)
 					{
@@ -434,29 +348,6 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 			rd = RANDOM_DOUBLE;//to choose sub-process...
 
 			___events++;
-
-			// int K = 2, k=0;
-			// if (rd <= sigma) {//branch locally but may then move/stay
-			// 	for(k=0; k < K; k++){
-			// 		//depending on the rate of hopping
-			// 		if(RANDOM_DOUBLE <= h){
-			// 			next = diffuse(pos);
-			// 			while (next == -2) next = diffuse(pos);//reflected from holes - this could *now* be abstracted inside lattice
-			// 			if (next == -1) {REMOVE(pos); ___deaths_by_dragons++; continue; }
-			// 			else{ ___births++; ADD(next); /*this is a try_move. if annihil: inc counter and dont stack*/ }
-			// 		}else{//effectively branch fully locally
-			// 			PUSH(pos); //add particle there but dont mess with the lattice
-			// 			___births++;//local birth
-			// 		}
-			// 	}
-			// }
-
-			// else {//extinction
-			// 	//printf("\n DIE.");
-			// 	___deaths++; //- note we infer this type of feath - for us death is by annihilation
-			// 	REMOVE(pos);
-			// 	continue;
-			// }
 
 			if (rd <= sigma) {//branch locally (and stay)
 				STAY(pos);
@@ -495,43 +386,12 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 				break;//this is a safety if trace is the only interesting observable - this prevents particle purgatory 
 			}
 		} while (PARTICLE_COUNT);
-
-		//if(N==1)return;//special test case
-
-		//custom stat
-		//printf("%d\t%Lf\t%f\t%f\t%d\t", _n, last_time,h, sigma,__trace);
-		//printf("%Lf\t%Lf\t%Lf\t%Lf\t%Lf\t\n", ___events , ___births, ___deaths, ___annihilations, ___deaths_by_dragons);
-
-		//add on number of births, deaths, deaths by dragon, events
-
-		//TODO: histogram of survival: write ID | LAST_TIME | SIGMA | H 
-		//a different thing should is alive at hist: we have that on average but we dont have a N*T life matrix
-
-		//finalise
 		radius_gyr /= __trace;
-
-		//printf("%d\n", __trace);
-
-		// if (__trace > ___trace_max){
-		// 	___trace_max = __trace;
-		// 	printf("\n#%d - (%d,%d) of (%d) LARGEST TRACE SO FAR!#############################\n", _n, __trace,get_cell_trace(), vol);
-		// }
-
-		//if N=5732 and L = 8191 go verbose
-		// if (_n == 5732 && vol == 8191){
-		// 	__verbose = 1;
-		// }
-		//printf("%f, %d\n",radius_gyr, __trace );
-		
-			//pad gaps in time for consistent data shape
-			// comment that out
-		
 		while (write_time_index < BINS) { WRITE_MOMENTS_TRACE(__trace, radius_gyr, PARTICLE_COUNT, write_time_index, 0); write_time_index++; }//SA
 		BIN_TRACE(__trace, vol, radius_gyr, PARTICLE_COUNT);
 		//see ALSO header
 		if ((_n + 1) % CHUNK_SIZE == 0 || (_n + 1) == N) { chunk++; printf("#commit trace\n");  COMMIT_MOMENTS_TRACE(chunk, L, h, sigma, D, bcs); if (__graph_type__ == 2) generate_graph(L); } //free graph at chunks -convention - forces rebuild
 		//COMPUTE_AVALANCHE_STATS(__avalanche, N) //SA
-
 		printf("#(HIST)#%d\t%d\t%Lf\t%Lf\n", __trace, __maxParticles, cumpartcount, last_time);
 		//WRITE_TRACE_SIZE(_n, L, last_time)
 	}
