@@ -1,6 +1,6 @@
 # Wecome
 
-compile with make (see make file for simple compile line)
+compile with *make* (see make file for simple compile line)
 
 run using *bws.exe > out.data*
 
