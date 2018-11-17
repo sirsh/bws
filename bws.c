@@ -347,7 +347,7 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 
 int parse_args(int *bcs, int *D, int *L, int *C, int *Ln, int *N, int *seed, int *min_l, int *max_l, double *h, int argc, char *argv[]) {
 	// Define default parameters 5000500
-	*seed = 5; *N = 500000; *D = 2; *Ln = -1; *bcs = 0; *L = -1; *C = 100; *h = 0.1;
+	*seed = 5; *N = 500000; *D = 2; *Ln = -1; *bcs = 0; *L = -1; *C = 10; *h = 0.1;
 	*min_l = 16; *max_l =16;
 
 	//test///////////////
