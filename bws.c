@@ -203,7 +203,7 @@ int main(int argc, char *argv[])
 		allocate_lattice(&lattice, MAX_L, D, __graph_type__);
 		spit_out_image_light(243, 2, 0, 0, 0);
 
-		if (__graph_type__ == 2) generate_graph(MAX_L);
+		if (__graph_type__ == 2) generate_graph(MAX_L,1);
 
 	
 	//we either run a single L if specified, otherwise go through the motions
@@ -231,68 +231,23 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 
 	//generate once here and optionally at the end of each chunk
 	if (__graph_type__ == 2)
-		generate_graph(L);
+		generate_graph(L,1);
 
-
-	//adding test particle
-	//
 	___events = ___births = ___deaths = ___annihilations = ___deaths_by_dragons = 0;
 
-	//printf("#Generating graph and exiting.... %d", vol);
-	//return;
-
-	//test walking the graph - ergodicity test
 	int cen1 = get_center(L, D);
 	int pos1 = cen1;
 	int next1 = 0;
 
-	//For rendering only, we will start at the beginning because easier to test
+	//For rendering only, we will start at the start because easier to test
 	//ADD(0);
 	ADD(cen1);
 
-
-	// _update_trace(9021, L, D, 2);
-	// _update_trace(8769, L, D, 2);
-	//return;
-	/*ERGODICITY
-	int ch = 0;
-	for (ch=0; ch< 10; ch++){
-	init_lattice(bcs, L, D);
-	stack.top = 0; __trace = 0; __immobileTrace = 0, __maxParticles = 0; __avalanche = 0.0;
-	radius_gyr = 0;
-	ADD(cen1);
-	for (_n=0; _n < 100000; _n++){
-		//printf("popping from %d\n", PARTICLE_COUNT);
-		POP_RANDOM_PARTICLE(pos1);
-		next1 = -1;
-		while(next1 == -1){ //reflecting for ergodic tests
-			//printf("pos now %d", pos1);
-			next1 = diffuse(pos1);
-		}
-		//printf("#Moving %d -> %d ... trace is %d and %d\n", pos1, next1, __trace, get_cell_trace());
-		if (next1 == -1){
-			printf("sink\n");
-			return;
-		}
-		//printf(" moving between %d %d \n", pos1, next1);
-		MOVE(pos1,next1);
-		//ADD(next1);
-		//printf("done");
-		printf("%d %d %d %d %d\n", ch, _n, __trace, pos1, next1);
-		if (__trace == L)break;
-	}
-	}
-
-	return;
-	*/
 	//global max time
 	long double max_time = 0.;
 	for (_n = 0; _n < N; _n++) {
-		//printf("%d\n",_n);
 		//SA unless we want to total per run but given we store everything we can sum later for now
 		___events = ___births = ___deaths = ___annihilations = ___deaths_by_dragons = 0;
-		//if (_n == 15034 +1)return;
-
 		long double cumpartcount = 0;
 
 		double rd = 0.0;
@@ -311,17 +266,11 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 		//randomize initial condition not on the boundary
 		///////////////////////////FOR GRAPH TYPE 2////////////////////////////////
 		if (__graph_type__ == 2) {
-
-			_RANDOM_INT(cen, L - 2) + 1;
-			
+			_RANDOM_INT(cen, L - 2) + 1;	
 		}
-
 
 		ADD(cen);
 		__maxParticles = 1;
-		// kick out this do while loop
-
-		//printf("\n#SAMPLING....");
 		do {
 			cumpartcount += PARTICLE_COUNT;
 			time += (EXP_WAIT(PARTICLE_COUNT));
@@ -329,18 +278,6 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 
 			while ((write_times[write_time_index] < time) && (write_time_index <= BINS - 1)) {
 				WRITE_MOMENTS_TRACE(__trace, (radius_gyr / __trace), PARTICLE_COUNT, write_time_index, 1); write_time_index++;
-				if (__trace > 20) {
-					//write the hull IF we have set a particular global option
-					if ((write_time_index % 10 == 0) && (__trace > 100)
-						&& (
-							_n == 15034)
-						)
-					{
-						//spit_out_image_light(L, D, time, _n, FALSE);
-						//spit_out_image(L, D, time, _n, FALSE);
-						//right_turning_walk(L,_n,time);
-					}
-				}
 			}
 			if (write_times[BINS - 1] < time) { printf("##Recorded excessive time"); break; }//todo see why this sometimes happens
 
@@ -370,7 +307,6 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 				continue;
 			}
 
-
 			if (PARTICLE_COUNT > (10 * __maxParticles)) {
 				__maxParticles = PARTICLE_COUNT;
 				//printf("\n#%d - (%d) of (%d) LARGEST PART SO FAR!#############################\n", _n, __maxParticles, vol);
@@ -382,15 +318,24 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 			}
 
 			last_time = time;
-			if (__quit_at_trace_max__ == 1 && __trace >= vol) {
+			if (__quit_at_trace_max__ == 1 && (__trace >= vol) | (time > MAX_T)) {
+				printf("#############BREAKING AT MAX TIME %Lf",time);
 				break;//this is a safety if trace is the only interesting observable - this prevents particle purgatory 
 			}
+
+			//printf("%Lf\t", time);
+			//printf("%d\t%d \n",chunk,  _n);
+			
 		} while (PARTICLE_COUNT);
 		radius_gyr /= __trace;
 		while (write_time_index < BINS) { WRITE_MOMENTS_TRACE(__trace, radius_gyr, PARTICLE_COUNT, write_time_index, 0); write_time_index++; }//SA
 		BIN_TRACE(__trace, vol, radius_gyr, PARTICLE_COUNT);
 		//see ALSO header
-		if ((_n + 1) % CHUNK_SIZE == 0 || (_n + 1) == N) { chunk++; printf("#commit trace\n");  COMMIT_MOMENTS_TRACE(chunk, L, h, sigma, D, bcs); if (__graph_type__ == 2) generate_graph(L); } //free graph at chunks -convention - forces rebuild
+		if ((_n + 1) % CHUNK_SIZE == 0 || (_n + 1) == N) { chunk++; printf("#commit trace\n");  COMMIT_MOMENTS_TRACE(chunk, L, h, sigma, D, bcs); 
+		if (__graph_type__ == 2){ 
+			generate_graph(L,0);
+			} 
+			} //free graph at chunks -convention - forces rebuild
 		//COMPUTE_AVALANCHE_STATS(__avalanche, N) //SA
 		printf("#(HIST)#%d\t%d\t%Lf\t%Lf\n", __trace, __maxParticles, cumpartcount, last_time);
 		//WRITE_TRACE_SIZE(_n, L, last_time)
@@ -400,14 +345,13 @@ inline void run_for_realisations(int N, int L, int D, double h, double sigma, in
 	printf("#okely dokely!");//look for this line int stats out//SA
 }
 
-
 int parse_args(int *bcs, int *D, int *L, int *C, int *Ln, int *N, int *seed, int *min_l, int *max_l, double *h, int argc, char *argv[]) {
 	// Define default parameters 5000500
-	*seed = 5; *N = 10000; *D = 2; *Ln = -1; *bcs = 0; *L = -1; *C = 100; *h = 0.1;
+	*seed = 5; *N = 500000; *D = 2; *Ln = -1; *bcs = 0; *L = -1; *C = 100; *h = 0.1;
 	*min_l = 16; *max_l =16;
 
 	//test///////////////
-	//*L = 243;//binary tree should be odd
+	//*L = 63;//binary tree should be odd
 	//*h = 0.5;
 	//*L = 63730;FB
 	//*L = 2559;// 2361;

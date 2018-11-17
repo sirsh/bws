@@ -22,7 +22,7 @@ RNG_TYPE genrand_int32(void);
 double genrand_real1(void);//[0,1]
 double genrand_real2(void);//[0,1)
 
-void generate_graph(int N);
+void generate_graph(int N,int allocate);
 int build_edge_distribution(int n);
 int init_cells(int D);
 void lattice_remove(int p);
@@ -32,7 +32,7 @@ inline static int _power_sample(double xmax, double degree);
 inline static void _allocate(unsigned int ** arr, int size, int arr_offset);
 inline static void init_graph(unsigned int L, int type);
 inline static void configure_edges(unsigned int L, int ks);
-void generate_binary_tree(long long L);
+void generate_binary_tree(long long L,int allocate);
 //int inline Xc(int i, int d);
 //void regenerate_graph(int n);
 

@@ -194,28 +194,37 @@ int build_edge_distribution(int n) {
 	return sum;
 }
 
-//trees normally call for recusion to implement statefullness on a stack
-//but not best for optimised code because you are not in control of the stack 
+//trees normally call for recursion to implement statefullness on a stack
+//but not best for optimized code because you are not in control of the stack 
 //if you can use problem specific information to manage the stack (some state will be required to expand the tree postfix, prefix or infix) then do so
-//here we stack "branched parents" so that on visting downstream nodes, they can pop the parents from the stack 
+//here we stack "branched parents" so that on visiting downstream nodes, they can pop the parents from the stack 
 //-we do not care what the order is but we must consistently pair - note there can only every be a small number of these as any child must choose an available parent
-void generate_binary_tree(long long L) {
+void generate_binary_tree(long long L,int allocate) {
 	//preamble
 	long long n = 0;//the root
 	long long i = 0;
 	long long _n_alive_stack = 0;
-	//printf("generating node elements....\n");
-	_allocate(&degree_dist, L, NODE_TYPE);
-	_allocate(&offsets, L, NODE_TYPE);
-	if (L > last_malloc_sizes[0]) last_malloc_sizes[0] = L;
-	for (i = 0; i < L; i++) { offsets[i] = -1; }
-	//we terminal at L+1
-	//every child nodes brings two stubs so adj is 2L
 	unsigned long long degree_sum = 2 * (L - 1);
-	printf("\n#adjacency size %llu for lattice of size %d\n", degree_sum, L);
-	_allocate(&adjacency, degree_sum, EDGE_TYPE);
-	if (degree_sum > last_malloc_sizes[1]) last_malloc_sizes[1] = degree_sum;
+	printf("\n#generating binary tree L= %d",L);
+
+
+	if (allocate == 1){
+		printf("re-allocating");
+		//printf("generating node elements....\n");
+		_allocate(&degree_dist, L, NODE_TYPE);
+		_allocate(&offsets, L, NODE_TYPE);
+		if (L > last_malloc_sizes[0]) last_malloc_sizes[0] = L;
+		printf("\n#adjacency size %llu for lattice of size %d\n", degree_sum, L);
+		_allocate(&adjacency, degree_sum, EDGE_TYPE);
+		if (degree_sum > last_malloc_sizes[1]) last_malloc_sizes[1] = degree_sum;
+		////////////////////////////////////////
+	}
+	//temp - allocate once then come in here and just return somewhere
+	//else {return;}
+
+	for (i = 0; i < L; i++) { offsets[i] = -1; }
 	for (i = 0; i < degree_sum; i++) { adjacency[i] = -1; }
+	
 	
 	int e_vals[11];
 
@@ -289,7 +298,7 @@ void generate_binary_tree(long long L) {
 	// 	fclose(g);
 	// }
 
-	printf("\n#random tree graph generated \n");
+	printf("\n#*************random tree graph generated********* \n");
 
 	/*
 	printf("\nvalence: ");
@@ -491,11 +500,11 @@ void read_in_network()
 
 }
 
-void generate_graph(int n){
+void generate_graph(int n,int allocate){
 	//init_graph(n,0);
 
-	generate_binary_tree(n);
-	//generate_graph_PA(n);
+	generate_binary_tree(n,allocate);
+	//generate_graph_PA(n,allocate);
 	//read_in_network();
 }
 
