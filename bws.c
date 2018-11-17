@@ -351,7 +351,7 @@ int parse_args(int *bcs, int *D, int *L, int *C, int *Ln, int *N, int *seed, int
 	*min_l = 16; *max_l =16;
 
 	//test///////////////
-	//*L = 63;//binary tree should be odd
+	*L = 63;//binary tree should be odd
 	//*h = 0.5;
 	//*L = 63730;FB
 	//*L = 2559;// 2361;
