@@ -319,7 +319,7 @@ void generate_binary_tree(long long L,int allocate) {
 }
 
 
-void generate_graph_PA(int n){
+void generate_graph_PA(int n,int allocate){
 	//pref attachment
 
 	printf("\n#generating graph %d",n);
