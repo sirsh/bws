@@ -201,7 +201,7 @@ int main(int argc, char *argv[])
 			D = 1;//
 
 		allocate_lattice(&lattice, MAX_L, D, __graph_type__);
-		spit_out_image_light(243, 2, 0, 0, 0);
+		//spit_out_image_light(243, 2, 0, 0, 0);
 
 		if (__graph_type__ == 2) generate_graph(MAX_L,1);
 
